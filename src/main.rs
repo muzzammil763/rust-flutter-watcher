@@ -46,7 +46,11 @@ async fn main() -> Result<()> {
     // Start or attach to flutter process
     let (mut flutter, child, mut ready_rx) = if args.attach {
         info!("Attach mode: connecting to already-running Flutter app");
-        FlutterProcess::attach(&project_path, args.device_id.as_deref()).await?
+        FlutterProcess::attach(
+            &project_path,
+            args.device_id.as_deref(),
+            args.vm_service_url.as_deref(),
+        ).await?
     } else {
         FlutterProcess::spawn(&project_path).await?
     };
@@ -61,6 +65,7 @@ async fn main() -> Result<()> {
     // Debounce state
     let mut pending_reload = false;
     let mut last_event_time = tokio::time::Instant::now();
+    let mut last_not_ready_warn = tokio::time::Instant::now();
     let mut is_ready = false;
 
     loop {
@@ -88,7 +93,11 @@ async fn main() -> Result<()> {
                                 error!("Failed to send reload: {:?}", e);
                             }
                         } else {
-                            warn!("Flutter not ready yet, holding reload until connected...");
+                            let now = tokio::time::Instant::now();
+                            if now.duration_since(last_not_ready_warn).as_secs() >= 5 {
+                                warn!("Waiting for Flutter to connect before sending reload...");
+                                last_not_ready_warn = now;
+                            }
                         }
                     }
                 }

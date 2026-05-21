@@ -29,4 +29,10 @@ pub struct Args {
     /// Device ID to attach to (optional, used with --attach)
     #[arg(long)]
     pub device_id: Option<String>,
+
+    /// VM service URL to connect to (optional, used with --attach).
+    /// If not provided, flutter-watcher tries ADB auto-discovery then mDNS.
+    /// Example: --vm-service-url=http://127.0.0.1:12345/
+    #[arg(long)]
+    pub vm_service_url: Option<String>,
 }
