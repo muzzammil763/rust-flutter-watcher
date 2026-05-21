@@ -1,0 +1,69 @@
+use anyhow::Result;
+use notify::{Config as NotifyConfig, Event, RecommendedWatcher, RecursiveMode, Watcher};
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::sync::mpsc;
+use tracing::{debug, error, info, warn};
+
+use crate::config::Config;
+use crate::events::{EventKind, FileEvent};
+
+pub struct FileWatcher {
+    #[allow(dead_code)]
+    watcher: RecommendedWatcher,
+}
+
+impl FileWatcher {
+    pub fn new(
+        project_path: PathBuf,
+        config: Arc<Config>,
+        tx: mpsc::Sender<FileEvent>,
+    ) -> Result<Self> {
+        let config_for_closure = Arc::clone(&config);
+        let watcher = RecommendedWatcher::new(
+            move |res: Result<Event, notify::Error>| {
+                match res {
+                    Ok(event) => {
+                        for path in &event.paths {
+                            let path = path.clone();
+                            let cfg = Arc::clone(&config_for_closure);
+                            let sender = tx.clone();
+
+                            tokio::spawn(async move {
+                                if cfg.should_watch(&path) {
+                                    let kind = match event.kind {
+                                        notify::EventKind::Create(_) => EventKind::Created,
+                                        notify::EventKind::Modify(_) => EventKind::Changed,
+                                        notify::EventKind::Remove(_) => EventKind::Removed,
+                                        _ => return,
+                                    };
+
+                                    debug!("File event: {:?} at {:?}", kind, path);
+                                    let _ = sender.send(FileEvent::new(path, kind)).await;
+                                }
+                            });
+                        }
+                    }
+                    Err(e) => {
+                        error!("Watch error: {:?}", e);
+                    }
+                }
+            },
+            NotifyConfig::default(),
+        )?;
+
+        let mut fw = FileWatcher { watcher };
+
+        for watch_path in &config.watch_paths {
+            let full_path = project_path.join(watch_path);
+            if full_path.exists() {
+                info!("Watching path: {:?}", full_path);
+                fw.watcher.watch(&full_path, RecursiveMode::Recursive)?;
+            } else {
+                warn!("Watch path does not exist: {:?}", full_path);
+            }
+        }
+
+        Ok(fw)
+    }
+}

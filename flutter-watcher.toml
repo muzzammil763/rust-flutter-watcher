@@ -1,0 +1,25 @@
+watch_paths = ["lib", "assets", "pubspec.yaml"]
+
+ignore_paths = [
+  "build",
+  ".dart_tool",
+  ".git",
+  "ios/Pods",
+  "android/build",
+  "android/.gradle"
+]
+
+file_extensions = [
+  "dart",
+  "yaml",
+  "yml",
+  "json",
+  "png",
+  "jpg",
+  "jpeg",
+  "svg",
+  "webp",
+  "gif"
+]
+
+debounce_ms = 300
