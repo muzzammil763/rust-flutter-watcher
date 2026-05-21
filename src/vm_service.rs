@@ -81,6 +81,16 @@ impl VmServiceClient {
 async fn resolve_ws_url(http_url: &str) -> Result<String> {
     let url = http_url.trim_end_matches('/');
     let without_scheme = url.strip_prefix("http://").unwrap_or(url);
+
+    // If the URL already contains an auth token in the path (e.g. /V2x2YUXCXmc=/),
+    // convert directly — do NOT re-probe, which would strip the token.
+    let path = without_scheme.find('/').map(|i| &without_scheme[i..]).unwrap_or("/");
+    if path.len() > 1 {
+        let ws = format!("{}/ws", url.replace("http://", "ws://"));
+        info!("VM service URL (auth token present): {}", ws);
+        return Ok(ws);
+    }
+
     let host_port = without_scheme.split('/').next().unwrap_or(without_scheme);
 
     // ── 1. HTTP GET / ────────────────────────────────────────────────────────
