@@ -4,6 +4,7 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 #[command(name = "flutter-watcher")]
 #[command(about = "Auto hot-reload watcher for Flutter projects")]
+#[command(version = "0.1.0")]
 pub struct Args {
     /// Path to the Flutter project directory
     #[arg(short, long, default_value = ".")]

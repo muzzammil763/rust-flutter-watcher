@@ -21,7 +21,7 @@ No more pressing `r` in the terminal — just save your file and watch your app 
 ### macOS (Homebrew)
 
 ```bash
-brew tap yourusername/flutter-watcher
+brew tap muzzammil763/flutter-watcher
 brew install rust_flutter_watcher
 ```
 
@@ -36,7 +36,7 @@ flutter-watcher --version
 Requires [Rust](https://rustup.rs/) (1.70+).
 
 ```bash
-git clone https://github.com/yourusername/rust-flutter-watcher.git
+git clone https://github.com/muzzammil763/rust-flutter-watcher.git
 cd rust-flutter-watcher
 cargo build --release
 ```
