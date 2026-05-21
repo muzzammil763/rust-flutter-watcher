@@ -43,8 +43,13 @@ async fn main() -> Result<()> {
     let project_path = std::fs::canonicalize(&args.path)?;
     info!("Project path: {:?}", project_path);
 
-    // Start flutter process
-    let (mut flutter, child, mut ready_rx) = FlutterProcess::spawn(&project_path).await?;
+    // Start or attach to flutter process
+    let (mut flutter, child, mut ready_rx) = if args.attach {
+        info!("Attach mode: connecting to already-running Flutter app");
+        FlutterProcess::attach(&project_path, args.device_id.as_deref()).await?
+    } else {
+        FlutterProcess::spawn(&project_path).await?
+    };
     let mut child = Some(child);
 
     // Channels
