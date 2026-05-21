@@ -1,18 +1,18 @@
 class RustFlutterWatcher < Formula
   desc "High-performance Rust-based file watcher for Flutter Hot Reload"
   homepage "https://github.com/muzzammil763/rust-flutter-watcher"
-  version "0.2.0"
+  version "0.2.1"
 
   if OS.mac?
     if Hardware::CPU.arm?
-      url "https://github.com/muzzammil763/rust-flutter-watcher/releases/download/v0.2.0/flutter-watcher-darwin-arm64"
+      url "https://github.com/muzzammil763/rust-flutter-watcher/releases/download/v0.2.1/flutter-watcher-darwin-arm64"
       sha256 "PLACEHOLDER_SHA256_ARM64"
     else
-      url "https://github.com/muzzammil763/rust-flutter-watcher/releases/download/v0.2.0/flutter-watcher-darwin-amd64"
-      sha256 "c7cae7e83cdeec7fd0b3c7a4a25039e142b30db2fad18b96a3eba2953127ecc3"
+      url "https://github.com/muzzammil763/rust-flutter-watcher/releases/download/v0.2.1/flutter-watcher-darwin-amd64"
+      sha256 "ed31656592c6b512d8edde40ccaa0e2455644e8f1208ff035c2a092bb67a94ca"
     end
   elsif OS.linux?
-    url "https://github.com/muzzammil763/rust-flutter-watcher/releases/download/v0.2.0/flutter-watcher-linux-amd64"
+    url "https://github.com/muzzammil763/rust-flutter-watcher/releases/download/v0.2.1/flutter-watcher-linux-amd64"
     sha256 "PLACEHOLDER_SHA256_LINUX"
   end
 
