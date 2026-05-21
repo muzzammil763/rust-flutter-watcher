@@ -48,8 +48,9 @@ impl FlutterProcess {
 
         let (ready_tx, ready_rx) = mpsc::channel(1);
 
+        let ready_tx2 = ready_tx.clone();
         tokio::spawn(stdout_reader(stdout, ready_tx));
-        tokio::spawn(stderr_reader(stderr));
+        tokio::spawn(stderr_reader(stderr, ready_tx2));
 
         let process = Self { stdin };
 
@@ -76,11 +77,14 @@ async fn stdout_reader(stdout: tokio::process::ChildStdout, ready_tx: mpsc::Send
     }
 }
 
-async fn stderr_reader(stderr: tokio::process::ChildStderr) {
+async fn stderr_reader(stderr: tokio::process::ChildStderr, ready_tx: mpsc::Sender<()>) {
     let reader = BufReader::new(stderr);
     let mut lines = reader.lines();
 
     while let Ok(Some(line)) = lines.next_line().await {
         eprintln!("[flutter] {}", line);
+        if line.contains("Flutter run key commands") {
+            let _ = ready_tx.send(()).await;
+        }
     }
 }

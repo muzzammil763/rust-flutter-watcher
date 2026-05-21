@@ -82,14 +82,13 @@ async fn main() -> Result<()> {
                     let elapsed = now.duration_since(last_event_time).as_millis() as u64;
 
                     if elapsed >= debounce_ms {
-                        pending_reload = false;
-
                         if is_ready {
+                            pending_reload = false;
                             if let Err(e) = flutter.reload().await {
                                 error!("Failed to send reload: {:?}", e);
                             }
                         } else {
-                            warn!("Flutter not ready yet, reload queued but skipped");
+                            warn!("Flutter not ready yet, holding reload until connected...");
                         }
                     }
                 }
