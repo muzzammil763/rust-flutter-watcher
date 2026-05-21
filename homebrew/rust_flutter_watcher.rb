@@ -9,7 +9,7 @@ class RustFlutterWatcher < Formula
       sha256 "PLACEHOLDER_SHA256_ARM64"
     else
       url "https://github.com/muzzammil763/rust-flutter-watcher/releases/download/v0.2.0/flutter-watcher-darwin-amd64"
-      sha256 "PLACEHOLDER_SHA256_AMD64"
+      sha256 "c7cae7e83cdeec7fd0b3c7a4a25039e142b30db2fad18b96a3eba2953127ecc3"
     end
   elsif OS.linux?
     url "https://github.com/muzzammil763/rust-flutter-watcher/releases/download/v0.2.0/flutter-watcher-linux-amd64"
